@@ -10,6 +10,12 @@ openairinterface5g: v0.3.2-branch
 Install lowlatency kernel as required by OAI:
 
 1. sudo apt-get install linux-image-3.19.0-61-lowlatency linux-headers-3.19.0-61-lowlatency
+	1.a sudo reboot
+	1.b Install docker by following the steps in this link: https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-from-a-package
+	1.c Install docker-compose:
+		sudo curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+		sudo chmod +x /usr/local/bin/docker-compose
+	1.d Since we added current user to docker group, we need to exit the shell and login again
 
 2. docker-compose build
 
@@ -22,12 +28,24 @@ On EPC container:
 
 cd /opt/openair-cn
 
+Install mysql server mannually
+Change the password in Cmakelists.txt for mysql admin if you want to use other password than "linux"
+Start the server: sudo service mysql start
+
 1. ./build_hss -i -F
+	This step will ask for password for mysql and few other inputs.
 2. ./build_hss
 3. ./build_epc -i -f
+	This step will ask for one input during wireshark installation.
 4. ./build_epc -c -l
 
-Update hss_fd.conf, epc.conf as per the example files in this directory
+Update hss_fd.conf(/usr/lib/../etc/freeDiameter/hss_fd.conf), epc.conf as per the example files in this directory
+mkdir -p /usr/local/etc/oai/freeDiameter
+Update hosts with:
+2.4.2.3 STEP3 of https://gitlab.eurecom.fr/oai/openair-cn/blob/master/DOCS/EPC_User_Guide.pdf
+vim /etc/hosts
+./check_hss_s6a_certificate /usr/local/etc/oai/freeDiameter/ hss.openair4G.eur
+./build_hss --clean --debug
 
 5. ./run_hss
 6. ./run_epc -v -0
