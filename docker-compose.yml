@@ -1,0 +1,83 @@
+version: '3.2'
+services:
+  oaisim:
+    build:
+      context: ./dockerfiles
+      dockerfile: Dockerfile-oaisim
+    image: sonika/oaisim:latest
+    volumes:
+    - /lib/modules:/lib/modules
+    - /dev:/dev
+    #image: alpine
+    stdin_open: true
+    tty: true
+    privileged: true
+    cap_add:
+    - ALL
+    networks:
+      ext_net:
+        ipv4_address: 12.1.1.80
+      s1mme_net:
+        ipv4_address: 10.1.10.41
+      s1u_net:
+        ipv4_address: 11.1.1.100
+  
+  oaiepc:
+    build:
+      context: ./dockerfiles
+      dockerfile: Dockerfile-oaiepc
+    image: sonika/oaiepc:latest
+    #image: alpine
+    volumes:
+    - /lib/modules:/lib/modules
+    stdin_open: true
+    tty: true
+    privileged: true
+    cap_add:
+    - ALL
+    networks:
+      s1mme_net:
+        ipv4_address: 10.1.10.42
+      s1u_net:
+        ipv4_address: 11.1.1.101
+      sgi_net:
+        ipv4_address: 13.1.1.90 
+
+networks:
+  sgi_net:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: "sgi_net"
+    ipam:
+      driver: default
+      config:
+        - subnet: 13.1.1.0/24     
+  ext_net:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: "ext_net"
+    ipam:
+      driver: default
+      config:
+        - subnet: 12.1.1.0/24     
+ 
+  s1mme_net:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: "s1mme_net"
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.1.10.0/24
+    internal: true
+
+  s1u_net:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: "s1u_net"
+    ipam:
+      driver: default
+      config: 
+        - subnet: 11.1.1.0/24
+    internal: true
+           

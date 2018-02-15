@@ -1,0 +1,11 @@
+FROM ubuntu:14.04
+
+RUN apt-get update && apt-get install software-properties-common git wget psmisc cmake gcc vim -y
+
+ARG OAI_CN_VER=0.3.2-branch
+
+ENV OAI_HOME /opt/openair-cn
+RUN cd /opt && wget https://gitlab.eurecom.fr/oai/openair-cn/repository/archive.tar.gz?ref=v${OAI_CN_VER} -O openair.tgz && \
+    mkdir -p ${OAI_HOME} && tar -xvzf openair.tgz -C ${OAI_HOME} --strip-components 1
+
+CMD ["/bin/bash"]

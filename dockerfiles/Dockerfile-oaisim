@@ -1,0 +1,16 @@
+FROM ubuntu:14.04
+
+RUN apt-get update && apt-get install software-properties-common git wget psmisc cmake gcc vim -y
+
+ARG OAI_AN_VER=0.6.1
+
+ENV OAI_HOME /opt/openairinterface5g
+RUN cd /opt && wget https://gitlab.eurecom.fr/oai/openairinterface5g/repository/archive.tar.gz?ref=v${OAI_AN_VER} -O openair.tgz && \
+    mkdir -p ${OAI_HOME} && tar -xvzf openair.tgz -C ${OAI_HOME} --strip-components 1
+
+RUN cd ${OAI_HOME}/cmake_targets && ./build_oai -I; exit 0
+RUN cd ${OAI_HOME}/cmake_targets && ./build_oai --oaisim -c; exit 0
+
+COPY oaisim.conf ${OAI_HOME}
+
+CMD ["/bin/bash"]

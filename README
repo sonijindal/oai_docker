@@ -1,0 +1,44 @@
+Server: Ubuntu 14.04
+
+Wiki followed:
+https://gitlab.eurecom.fr/oai/openairinterface5g/wikis/OpenAirKernelMainSetup
+https://gitlab.eurecom.fr/oai/openairinterface5g/wikis/HowtorunoaisimwithvirtualMMEonsamemachine
+
+openair-cn: v0.6.1 
+openairinterface5g: v0.3.2-branch 
+
+Install lowlatency kernel as required by OAI:
+
+1. sudo apt-get install linux-image-3.19.0-61-lowlatency linux-headers-3.19.0-61-lowlatency
+
+2. docker-compose build
+
+3. docker-compose up
+
+4a. docker exec -it oaidocker_oaisim_1 /bin/bash
+4b. docker exec -it oaidocker_oaiepc_1 /bin/bash
+
+On EPC container:
+
+cd /opt/openair-cn
+
+1. ./build_hss -i -F
+2. ./build_hss
+3. ./build_epc -i -f
+4. ./build_epc -c -l
+
+Update hss_fd.conf, epc.conf as per the example files in this directory
+
+5. ./run_hss
+6. ./run_epc -v -0
+
+On OAISIM container:
+
+cd /opt/openairinterface5g
+
+1. sudo apt-get install linux-headers-3.19.0-61-lowlatency
+2. ./build_oai -I  --oaisim -x --install-system-files
+3. ./build_oai --oaisim -c
+4. sudo ./run_enb_ue_virt_s1 -c /opt/oaisim.conf
+
+ 
